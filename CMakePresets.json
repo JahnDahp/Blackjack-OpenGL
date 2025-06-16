@@ -12,6 +12,8 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/Build",
       "cacheVariables": {
+        "CMAKE_C_COMPILER": "cl.exe",
+        "CMAKE_CXX_COMPILER": "cl.exe",
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
         "VCPKG_MANIFEST_MODE": "ON",
         "CMAKE_BUILD_TYPE": "Release"
