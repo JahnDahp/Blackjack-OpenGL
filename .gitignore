@@ -1,0 +1,21 @@
+# Build
+/build/
+/Build/
+/out/
+/Out/
+/Lib/
+/lib/
+/Debug/
+/debug/
+/Release/
+/release/
+/Test/
+/test/
+*.pdb
+
+# vcpkg
+/vcpkg_installed/
+/vcpkg/
+
+# Visual Studio
+/.vs/
