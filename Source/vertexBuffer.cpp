@@ -1,4 +1,4 @@
-#include "VertexBuffer.h"
+#include "vertexBuffer.h"
 
 VertexBuffer::VertexBuffer()
 {

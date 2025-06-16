@@ -1,4 +1,4 @@
-#include "Renderer.h"
+#include "renderer.h"
 
 void Renderer::draw(VertexArray& vertexArray, IndexBuffer& indexBuffer, Shader& shader, GLenum type, Texture* texture)
 {

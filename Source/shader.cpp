@@ -1,4 +1,4 @@
-#include "Shader.h"
+#include "shader.h"
 
 std::string getFileContents(const std::string& fileName)
 {
