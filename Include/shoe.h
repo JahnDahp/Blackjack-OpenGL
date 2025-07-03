@@ -1,6 +1,7 @@
 #pragma once
 
 #include <random>
+#include <algorithm>
 #include <stack>
 #include "card.h"
 
