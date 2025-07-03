@@ -12,9 +12,7 @@ Make sure the following tools are installed and available in your PATH:
 - Git
 - CMake (https://cmake.org/download/)
 - Ninja (https://ninja-build.org/)
-- Compiler C++20 compatible, MSVC, Clang, or GCC. Edit these lines in CMakePresets.json:
-  - "CMAKE_C_COMPILER": "cl.exe",
-  - "CMAKE_CXX_COMPILER": "cl.exe",
+- Compiler C++20 compatible (MSVC, Clang, GCC, etc.)
 
 How to build:
 
