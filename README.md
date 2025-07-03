@@ -20,4 +20,5 @@ How to build:
 - cd Blackjack
 - cmake --preset=Default
 - cmake --build --preset=Default
-- ./Bin/Blackjack.exe
+- cd Bin
+- Blackjack.exe
