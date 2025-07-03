@@ -1,9 +1,8 @@
 #include "vertexArray.h"
 
 VertexArray::VertexArray()
-{
-	ID = 0;
-}
+	: ID(0) 
+{}
 VertexArray::~VertexArray()
 {
 	glDeleteVertexArrays(1, &ID);
@@ -12,7 +11,7 @@ void VertexArray::init()
 {
 	glGenVertexArrays(1, &ID);
 }
-void VertexArray::linkAttrib(VertexBuffer& vertexBuffer, unsigned int layout, unsigned int numComponents, GLenum type, unsigned int stride, void* offset)
+void VertexArray::linkAttrib(VertexBuffer& vertexBuffer, unsigned int layout, unsigned int numComponents, GLenum type, unsigned int stride, const void* offset)
 {
 	bind();
 	vertexBuffer.bind();
@@ -21,7 +20,7 @@ void VertexArray::linkAttrib(VertexBuffer& vertexBuffer, unsigned int layout, un
 	vertexBuffer.unbind();
 	unbind();
 }
-void VertexArray::bind()
+void VertexArray::bind() 
 {
 	glBindVertexArray(ID);
 }
@@ -29,7 +28,7 @@ void VertexArray::unbind()
 {
 	glBindVertexArray(0);
 }
-unsigned int VertexArray::getID()
+unsigned int VertexArray::getID() const
 {
 	return ID;
 }

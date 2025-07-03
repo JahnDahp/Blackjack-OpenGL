@@ -1,40 +1,36 @@
 #pragma once
-#include <iostream>
-#include <GLM/glm.hpp>
-#include <GLM/gtc/matrix_transform.hpp>
+
 #include <GLM/gtc/type_ptr.hpp>
-#include "graphics/shader.h"
-#include "graphics/texture.h"
-#include "graphics/vertexArray.h"
-#include "graphics/vertexBuffer.h"
-#include "graphics/indexBuffer.h"
+#include "renderer.h"
 
 class Card 
 {
 public:
-  Card(int rank = 1, int suit = 0);
-  int rank() const;
-  int suit() const;
-  int total() const;
+  Card(int r = 1, int s = 1);
+  int getRank() const;
+  int getSuit() const;
   bool canSplit(const Card& rhs) const;
-  bool isAce() const;
+	bool isSoft() const;
   void unSoft();
-  void init();
-  void transform(float width, float height, float scaleWidth, float scaleHeight);
-  void draw(glm::mat4 projection);
-  Card& operator =(const Card& other);
-  bool operator ==(const Card& rhs) const;
-  friend std::ostream& operator <<(std::ostream& out, const Card& card);
+	bool isAce() const;
+	void init();
+	void transform(float x, float y, float scaleX, float scaleY);
+	void render(const glm::mat4& proj, const glm::mat4& view);
+	bool isVisible() const;
+	glm::vec2 getPos() const;
+	glm::vec2 getScale() const;
+	void setVisible(bool b);
 private:
-  int rank_;
-  int suit_;
-  unsigned int textureUni;
-  unsigned int transformUni;
-  unsigned int projectionUni;
-  glm::mat4 model;
-  Shader shader;
-  Texture texture = Texture("C:/dev/projects/Blackjack/res/graphics/textures/cards.png");
-  VertexArray vertexArray;
-  VertexBuffer vertexBuffer;
-  IndexBuffer indexBuffer;
+  int rank;
+  int suit;
+	bool soft;
+	std::shared_ptr<Shader> shader;
+	std::shared_ptr<Texture> texture;
+	Renderer renderer;
+	VertexArray vertexArray;
+	VertexBuffer vertexBuffer;
+	IndexBuffer indexBuffer;
+	bool visible;
+	glm::vec2 position;
+	glm::vec2 scale;
 };

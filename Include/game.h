@@ -1,52 +1,67 @@
 #pragma once
-#include <iostream>
+
 #include <algorithm>
-#include <vector>
-#include <chrono>
-#include <thread>
-#include "Shoe.h"
+#include "shoe.h"
 #include "player.h"
 #include "dealer.h"
-#include "button.h"
+#include "choiceButton.h"
+#include "playButton.h"
+#include "ArrowButton.h"
+#include "rules.h"
+#include "text.h"
 
 class Game 
 {
   public:
+    enum Choice 
+    {
+      NONE = -1,
+      HIT = 0,
+      STAND = 1,
+      DOUBLE = 2,
+      SPLIT = 3,
+      SURRENDER = 4,
+      PLAY_GAME = 5,
+    };
     static const int DECK_SIZE = 52;
-    Game();
-    Game(bool f);
-    void play();
-    bool continuePlay();
-    void decision();
-    std::string getDecision(Player player, Dealer dealer, bool firstDecision, int currentSplit);
-    std::string getButtonPress();
-    void dealerTotal(Dealer dealer, bool end);
-    void playerTotal(Player player);
-    void outcome(std::vector<Player> splits, Dealer dealer, std::string decision);
-    void winLoseDraw(Dealer dealer, Player player);
-    void updateButtons(glm::mat4 projection);
+    Game(const Rules& gameRules, int roll, int firstBet);
+    void renderPlayers(const glm::mat4& proj, const glm::mat4& view);
+    void renderDealer(const glm::mat4& proj, const glm::mat4& view);
+    void renderButtons(const glm::mat4& proj, const glm::mat4& view, float aspect);
+    void renderLabels(const glm::mat4& proj, float aspect);
+    void render(const glm::mat4& proj, const glm::mat4& view, float aspect);
+    void startHand();
+    void playGame();
+    void endHand();
+    void showButtons();
+    void getChoice();
+    void tryButtonPress(const glm::vec2& worldCoords);
+    void resetHandGraphics();
+    void resetGraphics();
+    void winLoss(bool isNatural21);
+    bool initialWinLoss(bool isNatural21);
+    void dealerHit(bool isNatural21);
+    bool isExited() const;
   private:
-    bool threeToTwo;
-    bool H17;
-    int decks;
-    bool doubleAny;
-    int doubles[3];
-    bool DAS;
-    int numberOfSplits;
-    bool drawSplitAces;
-    bool resplitAces;
-    bool surrender;
-    double penetration;
+    Rules rules;
+    std::vector<std::unique_ptr<ChoiceButton>> choiceButtons;
+    std::unique_ptr<PlayButton> playButton;
     Shoe shoe;
-    Card discard;
-    Button hitButton = Button("Hit");
-    Button standButton = Button("Stand");
-    Button splitButton = Button("Split");
-    Button doubleButton = Button("Double");
-    Button surrenderButton = Button("Surrender");
-    bool showHit;
-    bool showStand;
-    bool showSplit;
-    bool showDouble;
-    bool showSurrender;
+    std::unique_ptr<Card> discard;
+    std::vector<std::unique_ptr<Player>> players;
+    int currentHand;
+    std::unique_ptr<Dealer> dealer;
+    std::unique_ptr<Text> initialBetLabel;
+    std::unique_ptr<Text> bet5Label;
+    std::unique_ptr<Text> bet25Label;
+    std::unique_ptr<Text> bet100Label;
+    std::unique_ptr<Text> bankrollLabel;
+    std::unique_ptr<Text> gainLabel;
+    std::unique_ptr<Text> shuffleLabel;
+    std::vector<std::unique_ptr<ArrowButton>> bettingButtons;
+    int choice;
+    float bankroll;
+    float initialBet;
+    bool surrendered;
+    bool exit;
 };

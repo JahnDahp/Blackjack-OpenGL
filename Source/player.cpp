@@ -1,81 +1,109 @@
 #include "player.h"
 
-Player::Player(Card& one, Card& two) {
-  cards.push_back(one);
-  cards.push_back(two);
-  if (cards[0].rank() == 14 || cards[1].rank() == 14) {
-    soft = true;
+static std::string floatToString(float value, int precision = 2)
+{
+  int intPart = (int)value;
+  float frac = std::abs(value - intPart);
+  std::string result = std::to_string(intPart);
+  if (precision > 0)
+  {
+    frac = std::round(frac * std::pow(10, precision));
+    if (frac > 0)
+    {
+      result += '.';
+      while (precision > 1 && frac < std::pow(10, precision - 1))
+      {
+        result += '0';
+        precision--;
+      }
+      result += std::to_string((int)frac);
+    }
   }
-  playerTotal += cards[0].total();
-  playerTotal += cards[1].total();
+  return result;
 }
 
-Card& Player::first() {
-  return cards[0];
+Player::Player(std::unique_ptr<Card> one, std::unique_ptr<Card> two, float initialBet)
+{
+  hit(std::move(one));
+  hit(std::move(two));
+  bet = initialBet;
+  betLabel = std::make_unique<Text>("../Resources/Fonts/SF.otf", "Bet: " + floatToString(bet, 2), glm::vec4(0.f, 0.f, 0.f, 1.f));
 }
-
-Card& Player::second() {
-  return cards[1]; 
+Card* Player::getCard(int index) const
+{
+  if (index < 0 || index >= cards.size()) return nullptr;
+  return cards[index].get();
 }
-
-size_t Player::total() {
+const std::vector<std::unique_ptr<Card>>& Player::getCards() const
+{
+  return cards;
+}
+Text* Player::getBetLabel() const
+{
+  return betLabel.get();
+}
+float Player::getBet() const
+{
+  return bet;
+}
+void Player::setBet(float newBet)
+{
+  bet = newBet;
+  betLabel->setText("Bet: " + floatToString(bet, 2));
+}
+int Player::total() const
+{
+  int playerTotal = 0;
+  for (const auto& card : cards)
+  {
+    playerTotal += card->getRank();
+  }
   return playerTotal;
 }
-
-bool Player::isSoft() {
-  return soft; 
-}
-
-bool Player::naturalBlackjack() {
-  int rank1 = cards[0].rank();
-  int rank2 = cards[1].rank();
-  if (rank1 == 11 || rank1 == 12 || rank1 == 13) {
-    rank1 = 10;
-  }
-  if (rank2 == 11 || rank2 == 12 || rank2 == 13) {
-    rank2 = 10;
-  }
-  if ((rank1 == 10 && rank2 == 14) || (rank1 == 14 && rank2 == 10)) {
-    return true;
+bool Player::isSoft() const 
+{
+  for (const auto& card : cards)
+  {
+    if (card->isSoft()) return true;
   }
   return false;
 }
-
-std::vector<Card>& Player::allCards() {
-  return cards; 
-}
-
-void Player::hit(Card& hitCard) {
-  int aceCount = 0;
-  cards.push_back(hitCard);
-  playerTotal += hitCard.total();
-  if (hitCard.rank() == 14 && soft == false) {
-    soft = true;
-  }
-  if (soft == true && playerTotal > 21) {
-    for (Card& i : cards) {
-      if (i.isAce()) {
-        if (aceCount == 0) {
-          i.unSoft();
-          playerTotal -= 10;
-        }
-        aceCount++;
-      }
-    }
-    if (aceCount == 1) {
-      soft = false;
+void Player::unSoft()
+{
+  for (const auto& card : cards)
+  {
+    if (card->isSoft())
+    {
+      card->unSoft();
+      return;
     }
   }
 }
-
-Card& Player::split(Card& newCard) {
-  Card temp = cards[1];
-  playerTotal -= cards[1].total();
-  cards[1] = newCard;
-  playerTotal += cards[1].total();
-  return temp;
+bool Player::isBlackjack() const
+{
+  return total() == 21;
 }
-
-bool Player::bust() {
-  return playerTotal > 21 ? true : false;
+void Player::hit(std::unique_ptr<Card> hitCard)
+{
+  cards.push_back(std::move(hitCard));
+  while (isBust() && isSoft())
+  {
+    unSoft();
+  }
+}
+bool Player::canSplit()
+{
+  if (cards.size() != 2) return false;
+  return cards[0]->getRank() % 10 == cards[1]->getRank() % 10;
+}
+std::unique_ptr<Player> Player::split(std::unique_ptr<Card> newCard1, std::unique_ptr<Card> newCard2)
+{
+  std::unique_ptr<Card> splitCard = std::move(cards[1]);
+  cards.erase(cards.begin() + 1);
+  cards.push_back(std::move(newCard1));
+  return std::make_unique<Player>(std::move(splitCard), std::move(newCard2), bet);
+}
+bool Player::isBust() const
+{
+  return total() > 21;
 }

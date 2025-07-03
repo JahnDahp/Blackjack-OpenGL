@@ -1,4 +1,5 @@
 #pragma once
+
 #include <random>
 #include <stack>
 #include "card.h"
@@ -6,14 +7,13 @@
 class Shoe 
 {
   public:
-    Shoe(int deckNumber = 1);
-    std::vector<Card>& shoe();
-    int size();
-    int deckNumber();
-    Card& top();
-    void pop();
-    Card& topPop();
+    Shoe(int num = 1); 
+    void init();
+    int size() const;
+    bool empty() const;
+    int getDeckNumber() const;
+    std::unique_ptr<Card> topPop();
   private:
-    std::vector<Card> shoe_;
-    int deckNumber_;
+    std::vector<std::unique_ptr<Card>> shoe;
+    int deckNumber;
 };

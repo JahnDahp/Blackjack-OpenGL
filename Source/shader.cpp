@@ -9,10 +9,9 @@ std::string getFileContents(const std::string& fileName)
 	return contents.str();
 }
 Shader::Shader()
-{
-	ID = 0;
-}
-Shader::Shader(std::string vertexFile, std::string fragmentFile)
+	: ID(0)
+{}
+Shader::Shader(const std::string& vertexFile, const std::string& fragmentFile)
 {
 	std::string vertexCode = getFileContents(vertexFile);
 	std::string fragmentCode = getFileContents(fragmentFile);
@@ -56,11 +55,11 @@ void Shader::unbind()
 {
 	glUseProgram(0);
 }
-unsigned int Shader::getID()
+unsigned int Shader::getID() const
 {
 	return ID;
 }
-void Shader::setColor(glm::vec4 color)
+void Shader::setColor(const glm::vec4& color)
 {
 	bind();
 	glUniform4f(glGetUniformLocation(ID, "u_color"), color[0], color[1], color[2], color[3]);
@@ -72,19 +71,25 @@ void Shader::setTexture()
 	glUniform1i(glGetUniformLocation(ID, "u_tex"), 0);
 	unbind();
 }
-void Shader::setModel(glm::mat4 model)
+void Shader::setTextureOffset(float x, float y)
+{
+	bind();
+	glUniform2f(glGetUniformLocation(ID, "u_texOffset"), x, y);
+	unbind();
+}
+void Shader::setModel(const glm::mat4& model)
 {
 	bind();
 	glUniformMatrix4fv(glGetUniformLocation(ID, "u_model"), 1, GL_FALSE, glm::value_ptr(model));
 	unbind();
 }
-void Shader::setView(glm::mat4 view)
+void Shader::setView(const glm::mat4& view)
 {
 	bind();
 	glUniformMatrix4fv(glGetUniformLocation(ID, "u_view"), 1, GL_FALSE, glm::value_ptr(view));
 	unbind();
 }
-void Shader::setProj(glm::mat4 proj)
+void Shader::setProj(const glm::mat4& proj)
 {
 	bind();
 	glUniformMatrix4fv(glGetUniformLocation(ID, "u_proj"), 1, GL_FALSE, glm::value_ptr(proj));

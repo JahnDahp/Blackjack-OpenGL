@@ -1,16 +1,16 @@
 #include "renderer.h"
 
-void Renderer::draw(VertexArray& vertexArray, IndexBuffer& indexBuffer, Shader& shader, GLenum type, Texture* texture)
+void Renderer::draw(VertexArray& vertexArray, IndexBuffer& indexBuffer, std::shared_ptr<Shader> shader, GLenum type, std::shared_ptr<Texture> texture)
 {
 	vertexArray.bind();
 	indexBuffer.bind();
-	shader.bind();
+	shader->bind();
 	if (texture) texture->bind();
 
 	glDrawElements(type, indexBuffer.getCount(), GL_UNSIGNED_INT, nullptr);
 
 	vertexArray.unbind();
 	indexBuffer.unbind();
-	shader.unbind();
+	shader->unbind();
 	if (texture) texture->unbind();
 }

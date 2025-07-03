@@ -1,22 +1,28 @@
 #pragma once
+
 #include <vector>
 #include "card.h"
+#include "text.h"
 
 class Player
 {
   public:
-    Player(Card& one, Card& two);
-    Card& first();
-    Card& second();
-    size_t total();
-    bool isSoft();
-    bool naturalBlackjack();
-    std::vector<Card>& allCards();
-    void hit(Card& hitCard);
-    Card& split(Card& newCard);
-    bool bust();
+    Player(std::unique_ptr<Card> one, std::unique_ptr<Card> two, float initialBet);
+    Card* getCard(int index) const;
+    const std::vector<std::unique_ptr<Card>>& getCards() const;
+    Text* getBetLabel() const;
+    float getBet() const;
+    void setBet(float newBet);
+    int total() const;
+    bool isSoft() const;
+    void unSoft();
+    bool isBlackjack() const;
+    void hit(std::unique_ptr<Card> hitCard);
+    bool canSplit();
+    std::unique_ptr<Player> split(std::unique_ptr<Card> newCard1, std::unique_ptr<Card> newCard2);
+    bool isBust() const;
   private:
-    int playerTotal = 0;
-    std::vector<Card> cards;
-    bool soft = false;
+    std::vector<std::unique_ptr<Card>> cards;
+    float bet;
+    std::unique_ptr<Text> betLabel;
 };

@@ -1,136 +1,93 @@
 #include "card.h"
 
-Card::Card(int rank, int suit) {
-  rank_ = rank;
-  suit_ = suit;
-  textureUni = 0;
-  transformUni = 0;
-  projectionUni = 0;
-  model = glm::mat4(1.0f);
+Card::Card(int r, int s)
+  : shader(nullptr),
+  texture(nullptr),
+  rank(r),
+  suit(s),
+  soft(r == 1),
+  visible(true),
+  position(0.0f),
+  scale(1.0f)
+{}
+int Card::getRank() const 
+{
+  if (rank >= 11 && rank <= 13) return 10;
+  if (soft) return 11;
+  return rank;
 }
-
-int Card::rank() const {
-  return rank_;
+int Card::getSuit() const 
+{
+  return suit;
 }
-
-int Card::suit() const {
-  return suit_;
+bool Card::canSplit(const Card& rhs) const 
+{
+  return getRank() == rhs.getRank();
 }
-
-int Card::total() const {
-  int score;
-  if (rank() > 10 && rank() < 14) {
-    score = 10;
-  } else if (rank() == 14) {
-    score = 11;
-  } else {
-    score = rank();
-  }
-  return score;
+bool Card::isSoft() const
+{
+    return soft;
 }
-
-bool Card::canSplit(const Card& rhs) const {
-  int rank1 = rank();
-  int rank2 = rhs.rank();
-  if (rank1 == 11 || rank1 == 12 || rank1 == 13) {
-    rank1 = 10;
-  }
-  if (rank2 == 11 || rank2 == 12 || rank2 == 13) {
-    rank2 = 10;
-  }
-  return rank1 == rank2;
+void Card::unSoft() 
+{
+  soft = false;
 }
-
-bool Card::isAce() const {
-  return rank() == 14 ? true : false;
+bool Card::isAce() const
+{
+  return rank == 1;
 }
-
-void Card::unSoft() {
-  rank_ -= 13;
-}
-
 void Card::init()
 {
+  static std::shared_ptr<Shader> sharedShader = std::make_shared<Shader>("../Resources/Shaders/texture.vert", "../Resources/Shaders/texture.frag");
+  static std::shared_ptr<Texture> sharedTexture = std::make_shared<Texture>("../Resources/Textures/cards.png");
+  shader = sharedShader;
+  texture = sharedTexture;
   float vertices[] =
   {
-    -3.0f / 5.0f, -1.0f,  0.0f,  (float)(suit_ - 1) / 4, (float)(rank_ - 1) / 13, // Lower Left
-     3.0f / 5.0f, -1.0f,  0.0f,  (float)(suit_) / 4, (float)(rank_ - 1) / 13, // Lower Right
-     3.0f / 5.0f,  1.0f,  0.0f,  (float)(suit_) / 4, (float)(rank_) / 13, // Upper Right
-    -3.0f / 5.0f,  1.0f,  0.0f,  (float)(suit_ - 1) / 4, (float)(rank_) / 13, // Upper Left
+    -3.0f / 5.0f, -1.0f, 0.0f, (suit - 1) / 4.0f, (rank - 1) / 13.0f, // Lower Left
+     3.0f / 5.0f, -1.0f, 0.0f, (suit) / 4.0f, (rank - 1) / 13.0f, // Lower Right
+     3.0f / 5.0f,  1.0f, 0.0f, (suit) / 4.0f, (rank) / 13.0f, // Upper Right
+    -3.0f / 5.0f,  1.0f, 0.0f, (suit - 1) / 4.0f, (rank) / 13.0f  // Upper Left
   };
-  unsigned int indices[] =
-  {
-    0, 1, 2,
-    0, 2, 3,
-  };
-  vertexBuffer.initialize(vertices, sizeof(vertices));
-  indexBuffer.initialize(indices, sizeof(indices));
-  vertexArray.bind();
+  unsigned int indices[] = { 0, 1, 2, 2, 3, 0 };
+  vertexArray.init();
+  vertexBuffer.init(vertices, sizeof(vertices));
+  indexBuffer.init(indices, 6);
   vertexArray.linkAttrib(vertexBuffer, 0, 3, GL_FLOAT, 5, (void*)0);
   vertexArray.linkAttrib(vertexBuffer, 1, 2, GL_FLOAT, 5, (void*)(3 * sizeof(float)));
-  textureUni = glGetUniformLocation(shader.getID(), "u_texture");
-  transformUni = glGetUniformLocation(shader.getID(), "u_transform");
-  projectionUni = glGetUniformLocation(shader.getID(), "u_projection");
-  shader.bind();
-  glUniform1i(textureUni, 0);
+  shader->setTexture();
+  shader->setTextureOffset(0.0f, 0.0f);
+  shader->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+  shader->setModel(glm::mat4(1.0f));
 }
-
-void Card::transform(float width, float height, float scaleWidth, float scaleHeight)
+void Card::transform(float x, float y, float scale_X, float scale_Y)
 {
-  model = glm::translate(model, glm::vec3(width, height, 0.0f));
-  model = glm::scale(model, glm::vec3(scaleWidth, scaleHeight, 1.0f));
+  position = glm::vec2(x, y);
+  scale = glm::vec2(scale_X, scale_Y);
+  glm::mat4 model(1.0f);
+  model = glm::translate(model, glm::vec3(x, y, 0.0f));
+  model = glm::scale(model, glm::vec3(scale_X, scale_Y, 1.0f));
+  shader->setModel(model);
 }
-
-void Card::draw(glm::mat4 projection)
+void Card::render(const glm::mat4& proj, const glm::mat4& view)
 {
-  vertexArray.bind();
-  indexBuffer.bind();
-  shader.bind();
-  texture.bind();
-  glUniformMatrix4fv(transformUni, 1, GL_FALSE, glm::value_ptr(model));
-  glUniformMatrix4fv(projectionUni, 1, GL_FALSE, glm::value_ptr(projection));
-  glDrawElements(GL_TRIANGLES, indexBuffer.getCount(), GL_UNSIGNED_INT, nullptr);
+  shader->setView(view);
+  shader->setProj(proj);
+  if (visible) renderer.draw(vertexArray, indexBuffer, shader, GL_TRIANGLES, texture);
 }
-
-Card& Card::operator=(const Card& other) {
-  if (this != &other) {
-    rank_ = other.rank_;
-    suit_ = other.suit_;
-
-    texture = other.texture;
-    shader = other.shader;
-
-    textureUni = other.textureUni;
-    transformUni = other.transformUni;
-    projectionUni = other.projectionUni;
-  }
-  return *this;
+bool Card::isVisible() const
+{
+  return visible;
 }
-
-bool Card::operator ==(const Card& rhs) const {
-  if (rank_ == rhs.rank_ && suit_ == rhs.suit_) {
-    return true;
-  }
-  return false;
+glm::vec2 Card::getPos() const
+{
+  return position;
 }
-
-std::ostream& operator <<(std::ostream& out, const Card& card) {
-  if (card.rank() == 1 || card.rank() == 14) out << "Ace of ";
-  if (card.rank() == 2) out << "Two of "; 
-  if (card.rank() == 3) out << "Three of "; 
-  if (card.rank() == 4) out << "Four of "; 
-  if (card.rank() == 5) out << "Five of ";
-  if (card.rank() == 6) out << "Six of "; 
-  if (card.rank() == 7) out << "Seven of "; 
-  if (card.rank() == 8) out << "Eight of "; 
-  if (card.rank() == 9) out << "Nine of "; 
-  if (card.rank() == 10) out << "Ten of "; 
-  if (card.rank() == 11) out << "Jack of "; 
-  if (card.rank() == 12) out << "Queen of "; 
-  if (card.rank() == 13) out << "King of "; 
-  if (card.suit() == 1) out << "Spades"; 
-  if (card.suit() == 2) out << "Clubs";  
-  if (card.suit() == 3) out << "Hearts"; 
-  if (card.suit() == 4) out << "Diamonds"; 
-  return out;
+glm::vec2 Card::getScale() const
+{
+  return scale;
+}
+void Card::setVisible(bool b)
+{
+  visible = b;
 }

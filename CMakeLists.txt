@@ -9,6 +9,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/Bin/")
 find_package(GLEW REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
+find_package(freetype CONFIG REQUIRED)
 
 add_executable(Blackjack 
 	"main.cpp" 
@@ -23,10 +24,17 @@ add_executable(Blackjack
 	"Source/dealer.cpp" 
 	"Source/card.cpp" 
 	"Source/button.cpp" 
-	"Source/shoe.cpp")
+	"Source/shoe.cpp"
+	"Source/blackjack.cpp"
+	"Source/choiceButton.cpp"
+	"Source/playButton.cpp"
+	"Source/text.cpp"
+	"Source/titleScreen.cpp"
+	"Source/switchButton.cpp"
+	"Source/arrowButton.cpp" )
 
 target_include_directories(Blackjack PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Source")
 target_include_directories(Blackjack PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Include")
 target_include_directories(Blackjack PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Resources")
 
-target_link_libraries(Blackjack PRIVATE GLEW::GLEW glfw glm::glm)
+target_link_libraries(Blackjack PRIVATE GLEW::GLEW glfw glm::glm freetype)

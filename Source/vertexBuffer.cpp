@@ -1,21 +1,26 @@
 #include "vertexBuffer.h"
 
 VertexBuffer::VertexBuffer()
+	: ID(0), 
+	vertexCount(0) 
+{}
+VertexBuffer::~VertexBuffer()
 {
-	ID = 0;
-	vertexCount = 0;
+	glDeleteBuffers(1, &ID);
 }
-void VertexBuffer::init(float* vertices, unsigned int count)
+void VertexBuffer::init(const float* vertices, unsigned int count)
 {
 	vertexCount = count;
 	glGenBuffers(1, &ID);
 	bind();
-	glBufferData(GL_ARRAY_BUFFER, count * sizeof(float), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * count, vertices, GL_STATIC_DRAW);
 	unbind();
 }
-VertexBuffer::~VertexBuffer()
+void VertexBuffer::updateText(const float* vertices)
 {
-	glDeleteBuffers(1, &ID);
+	bind();
+	glBufferData(GL_ARRAY_BUFFER, 6 * 4 * sizeof(float), vertices, GL_STATIC_DRAW);
+	unbind();
 }
 void VertexBuffer::bind()
 {
@@ -25,11 +30,11 @@ void VertexBuffer::unbind()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
-unsigned int VertexBuffer::getCount()
+unsigned int VertexBuffer::getCount() const
 {
 	return vertexCount;
 }
-unsigned int VertexBuffer::getID()
+unsigned int VertexBuffer::getID() const
 {
 	return ID;
 }

@@ -7,5 +7,5 @@
 
 struct Renderer
 {
-	void draw(VertexArray& vertexArray, IndexBuffer& indexBuffer, Shader& shader, GLenum type, Texture* texture = nullptr);
+	void draw(VertexArray& vertexArray, IndexBuffer& indexBuffer, std::shared_ptr<Shader> shader, GLenum type, std::shared_ptr<Texture> texture = nullptr);
 };

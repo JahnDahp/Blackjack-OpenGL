@@ -1,24 +1,23 @@
 #pragma once
+
 #include <vector>
 #include "card.h"
-#include "shoe.h"
 
 class Dealer 
 {
   public:
-    Dealer(Card& up, Card& hole);
-    Card& up();
-    Card& hole();
-    size_t total();
-    bool isSoft();
-    bool naturalBlackjack();
-    std::vector<Card>& allCards();
-    bool insurancePossible();
-    void hit(Card& hitCard);
-    bool bust();
+    Dealer(std::unique_ptr<Card> up, std::unique_ptr<Card> hole, bool hit17);
+    Card* getCard(int index) const;
+    const std::vector<std::unique_ptr<Card>>& getCards() const;
+    int total(bool onlyUp) const;
+    bool isSoft() const;
+    void unSoft();
+    bool isBlackjack() const;
+    bool isBust() const;
+    bool canInsure() const;
+    void hit(std::unique_ptr<Card> hitCard);
+    bool stop() const;
   private:
-    size_t dealerTotal = 0;
-    std::vector<Card> cards;
-    bool soft = false;
-    bool insurance = false;
+    std::vector<std::unique_ptr<Card>> cards;
+    bool H17;
 };
