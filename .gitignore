@@ -15,7 +15,6 @@
 
 # vcpkg
 /vcpkg_installed/
-/vcpkg/
 
 # Visual Studio
 /.vs/
