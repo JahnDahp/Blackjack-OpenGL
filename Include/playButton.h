@@ -6,7 +6,6 @@ class PlayButton : public Button
 {
 public:
 	PlayButton();
-	int getValue() const;
 	void init() override;
 	void transform(float x, float y, float scaleX, float scaleY) override;
 	void render(const glm::mat4& proj, const glm::mat4& view) override;

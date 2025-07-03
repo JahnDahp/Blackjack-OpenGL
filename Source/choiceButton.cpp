@@ -18,10 +18,10 @@ void ChoiceButton::init()
   texture = sharedTexture;
   float vertices[] =
   {
-    -1.0f, -0.5f, 0.0f, 0.0f, (float)(value) / 5.0f, // Lower Left
-     1.0f, -0.5f, 0.0f, 1.0f, (float)(value) / 5.0f, // Lower Right
-     1.0f,  0.5f, 0.0f, 1.0f, (float)(value + 1) / 5.0f, // Upper Right
-    -1.0f,  0.5f, 0.0f, 0.0f, (float)(value + 1) / 5.0f, // Upper Left
+    -1.0f, -0.5f, 0.0f, 0.0f, (float)(value) / 7.0f, // Lower Left
+     1.0f, -0.5f, 0.0f, 1.0f, (float)(value) / 7.0f, // Lower Right
+     1.0f,  0.5f, 0.0f, 1.0f, (float)(value + 1) / 7.0f, // Upper Right
+    -1.0f,  0.5f, 0.0f, 0.0f, (float)(value + 1) / 7.0f, // Upper Left
   };
   unsigned int indices[] = { 0, 1, 2, 2, 3, 0 };
   getVAO().init();

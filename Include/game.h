@@ -21,7 +21,9 @@ class Game
       DOUBLE = 2,
       SPLIT = 3,
       SURRENDER = 4,
-      PLAY_GAME = 5,
+      INSURANCE = 5,
+      NO_INSURANCE = 6,
+      PLAY_GAME = 7,
     };
     static const int DECK_SIZE = 52;
     Game(const Rules& gameRules, int roll, int firstBet);
@@ -41,6 +43,7 @@ class Game
     void winLoss(bool isNatural21);
     bool initialWinLoss(bool isNatural21);
     void dealerHit(bool isNatural21);
+    void runInsurance();
     bool isExited() const;
   private:
     Rules rules;
@@ -63,5 +66,6 @@ class Game
     float bankroll;
     float initialBet;
     bool surrendered;
+    bool insured;
     bool exit;
 };

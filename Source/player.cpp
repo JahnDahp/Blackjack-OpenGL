@@ -53,12 +53,20 @@ void Player::setBet(float newBet)
 }
 int Player::total() const
 {
-  int playerTotal = 0;
+  int total = 0;
+  int numSoftAces = 0;
   for (const auto& card : cards)
   {
-    playerTotal += card->getRank();
+    int rank = card->getRank();
+    if (rank == 11) numSoftAces++;
+    total += rank;
   }
-  return playerTotal;
+  while (total > 21 && numSoftAces > 0)
+  {
+    total -= 10;
+    numSoftAces--;
+  }
+  return total;
 }
 bool Player::isSoft() const 
 {
@@ -86,10 +94,6 @@ bool Player::isBlackjack() const
 void Player::hit(std::unique_ptr<Card> hitCard)
 {
   cards.push_back(std::move(hitCard));
-  while (isBust() && isSoft())
-  {
-    unSoft();
-  }
 }
 bool Player::canSplit()
 {
@@ -99,8 +103,8 @@ bool Player::canSplit()
 std::unique_ptr<Player> Player::split(std::unique_ptr<Card> newCard1, std::unique_ptr<Card> newCard2)
 {
   std::unique_ptr<Card> splitCard = std::move(cards[1]);
-  cards.erase(cards.begin() + 1);
-  cards.push_back(std::move(newCard1));
+  cards.erase(cards.begin() + 1); 
+  hit(std::move(newCard1));
   return std::make_unique<Player>(std::move(splitCard), std::move(newCard2), bet);
 }
 bool Player::isBust() const

@@ -35,14 +35,16 @@ Game::Game(const Rules& gameRules, int roll, int firstBet)
   choice(PLAY_GAME),
   currentHand(0),
   surrendered(false),
+  insured(false),
   exit(false)
 {
-  for (int i = 0; i < 5; i++)
+  for (int i = 0; i < PLAY_GAME; i++)
   {
     choiceButtons.push_back(std::make_unique<ChoiceButton>(i));
     choiceButtons[i]->init();
   }
   playButton = std::make_unique<PlayButton>();
+
   initialBetLabel = std::make_unique<Text>("../Resources/Fonts/SF.otf", "", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
   bet5Label = std::make_unique<Text>("../Resources/Fonts/SF.otf", "Bet 5", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
   bet25Label = std::make_unique<Text>("../Resources/Fonts/SF.otf", "Bet 25", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -158,6 +160,7 @@ void Game::startHand()
 }
 void Game::playGame()
 {
+  if (playButton->isVisible() && choice != PLAY_GAME) return;
   if (choice == PLAY_GAME)
   {
     for (auto& player : players) player.reset();
@@ -165,21 +168,22 @@ void Game::playGame()
     dealer.reset();
     startHand();
   }
-  if (playButton->isVisible()) return;
+  showButtons();
+  getChoice();
+  if (dealer->canInsure()) return;
   if (dealer->total(false) == 21 || currentHand >= players.size())
   {
     endHand();
     return;
   }
   if (players[currentHand]->total() == 21 || players[currentHand]->isBust()) currentHand++;
-  showButtons();
-  getChoice();
+  
 }
 void Game::endHand()
 {
   resetGraphics();
-  bool isNatural21 = players[0]->total() == 21 && players[0]->getCards().size() == 2;
-  if (!initialWinLoss(isNatural21));
+  bool isNatural21 = players[0]->total() == 21 && players[0]->getCards().size() == 2 && players.size() == 1;
+  if (!initialWinLoss(isNatural21))
   {
     dealerHit(isNatural21);
     winLoss(isNatural21);
@@ -191,6 +195,12 @@ void Game::showButtons()
   for (auto& button : choiceButtons) button->setVisible(false);
   if (currentHand >= players.size()) return;
   auto& player = players[currentHand];
+  if (dealer->canInsure())
+  {
+    choiceButtons[INSURANCE]->setVisible(true);
+    choiceButtons[NO_INSURANCE]->setVisible(true);
+    return;
+  }
   choiceButtons[HIT]->setVisible(true);
   choiceButtons[STAND]->setVisible(true);
   if (player->getCards().size() != 2) return;
@@ -209,6 +219,19 @@ void Game::getChoice()
 {
   if (currentHand >= players.size()) return;
   auto& player = players[currentHand];
+  if (choice == INSURANCE)
+  {
+    bankroll -= player->getBet() * 0.5f;
+    insured = true;
+  }
+  if (choice == INSURANCE || choice == NO_INSURANCE)
+  {
+    dealer->doInsurance(false);
+    choiceButtons[INSURANCE]->setVisible(false);
+    choiceButtons[NO_INSURANCE]->setVisible(false);
+    choice = NONE;
+    return;
+  }
   if (player->getCard(0)->isAce() && players.size() > 1)
   {
     if (rules.resplitAces && players.size() > rules.numSplits) currentHand++;
@@ -224,8 +247,11 @@ void Game::getChoice()
   if (choice == SURRENDER) surrendered = true;
   if (choice == SPLIT)
   {
-    players.push_back(player->split(shoe.topPop(), shoe.topPop()));
-    bankroll -= player->getBet();
+    std::unique_ptr<Card> card1 = shoe.topPop();
+    std::unique_ptr<Card> card2 = shoe.topPop();
+    std::unique_ptr<Player> newPlayer = players[currentHand]->split(std::move(card1), std::move(card2));
+    players.push_back(std::move(newPlayer));
+    bankroll -= players[currentHand]->getBet();
   }
   choice = NONE;
 }
@@ -237,7 +263,7 @@ void Game::tryButtonPress(const glm::vec2& worldCoords)
   }
   if (playButton->tryButtonPress(worldCoords))
   {
-    choice = playButton->getValue();
+    choice = PLAY_GAME;
     bankroll -= initialBet;
     if (bankroll < 0) exit = true;
     if (initialBet < 5)  exit = true;
@@ -304,7 +330,7 @@ void Game::winLoss(bool isNatural21)
     }
     if (dealer->isBust())
     {
-      bankroll += player->getBet() * 2;
+      bankroll += player->getBet() * 2.0f;
       gain += player->getBet();
       continue;
     }
@@ -315,7 +341,7 @@ void Game::winLoss(bool isNatural21)
     }
     if (player->total() > dealer->total(false))
     {
-      bankroll += player->getBet() * 2;
+      bankroll += player->getBet() * 2.0f;
       gain += player->getBet();
       continue;
     }
@@ -324,15 +350,37 @@ void Game::winLoss(bool isNatural21)
       bankroll += player->getBet();
     }
   }
+  if (insured)
+  {
+    gain -= players[0]->getBet() * 0.5f;
+    insured = false;
+  }
   if (gain >= 0.0f) gainLabel->setText("+" + floatToString(gain, 2));
   if (gain < 0.0f) gainLabel->setText(floatToString(gain, 2));
 }
 bool Game::initialWinLoss(bool isNatural21)
 {
+  if (dealer->total(false) == 21 && insured)
+  {
+    bankroll += players[0]->getBet() * 1.5f;
+    if (isNatural21)
+    {
+      bankroll += players[0]->getBet();
+      gainLabel->setText("+" + floatToString(players[0]->getBet()));
+    }
+    else gainLabel->setText("+0");
+    insured = false;
+    return true;
+  }
   if (isNatural21 && dealer->total(false) != 21)
   {
     bankroll += players[0]->getBet() + (players[0]->getBet() * rules.blackjackPay);
-    gainLabel->setText("+" + floatToString(players[0]->getBet() * rules.blackjackPay, 2));
+    if (insured)
+    {
+      gainLabel->setText("+" + floatToString(players[0]->getBet(), 2));
+      insured = false;
+    }
+    else gainLabel->setText("+" + floatToString(players[0]->getBet() * rules.blackjackPay, 2));
     return true;
   }
   if (surrendered)

@@ -15,9 +15,11 @@ class Dealer
     bool isBlackjack() const;
     bool isBust() const;
     bool canInsure() const;
+    void doInsurance(bool b);
     void hit(std::unique_ptr<Card> hitCard);
     bool stop() const;
   private:
     std::vector<std::unique_ptr<Card>> cards;
     bool H17;
+    bool insure;
 };

@@ -5,10 +5,6 @@ PlayButton::PlayButton()
   shader(nullptr),
   texture(nullptr)
 {}
-int PlayButton::getValue() const
-{
-  return 5;
-}
 void PlayButton::init()
 {
   static std::shared_ptr<Shader> sharedShader = std::make_shared<Shader>("../Resources/Shaders/texture.vert", "../Resources/Shaders/texture.frag");

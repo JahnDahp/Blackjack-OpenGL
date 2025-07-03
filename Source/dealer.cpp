@@ -1,7 +1,8 @@
 #include "dealer.h"
 
 Dealer::Dealer(std::unique_ptr<Card> up, std::unique_ptr<Card> hole, bool hit17)
-  : H17(hit17)
+  : H17(hit17),
+  insure(true)
 {
   hit(std::move(up));
   hit(std::move(hole));
@@ -19,12 +20,20 @@ const std::vector<std::unique_ptr<Card>>& Dealer::getCards() const
 int Dealer::total(bool onlyUp) const
 {
   if (onlyUp) return cards[0]->getRank();
-  int dealerTotal = 0;
-  for (auto& card : cards)
+  int total = 0;
+  int numSoftAces = 0;
+  for (const auto& card : cards)
   {
-    dealerTotal += card->getRank();
+    int rank = card->getRank();
+    if (rank == 11) numSoftAces++;
+    total += rank;
   }
-  return dealerTotal;
+  while (total > 21 && numSoftAces > 0)
+  {
+    total -= 10;
+    numSoftAces--;
+  }
+  return total;
 }
 bool Dealer::isSoft() const
 {
@@ -55,15 +64,15 @@ bool Dealer::isBust() const
 }
 bool Dealer::canInsure() const
 {
-  return cards[0]->getRank() == 11;
+  return cards[0]->isAce() && insure;
+}
+void Dealer::doInsurance(bool b)
+{
+  insure = b;
 }
 void Dealer::hit(std::unique_ptr<Card> hitCard)
 {
   cards.push_back(std::move(hitCard));
-  while (isBust() && isSoft())
-  {
-    unSoft();
-  }
 }
 bool Dealer::stop() const
 {
