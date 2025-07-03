@@ -43,7 +43,6 @@ class Game
     void winLoss(bool isNatural21);
     bool initialWinLoss(bool isNatural21);
     void dealerHit(bool isNatural21);
-    void runInsurance();
     bool isExited() const;
   private:
     Rules rules;

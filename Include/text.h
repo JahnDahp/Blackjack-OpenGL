@@ -1,9 +1,8 @@
 #pragma once
 
-#include <iostream>
+#include <ft2build.h>
 #include <map>
 #include "renderer.h"
-#include <ft2build.h>
 #include FT_FREETYPE_H 
 
 struct Character
