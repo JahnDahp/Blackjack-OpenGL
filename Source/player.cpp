@@ -89,7 +89,7 @@ void Player::unSoft()
 }
 bool Player::isBlackjack() const
 {
-  return total() == 21;
+  return total() == 21 && cards.size() == 2;
 }
 void Player::hit(std::unique_ptr<Card> hitCard)
 {

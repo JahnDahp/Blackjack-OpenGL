@@ -40,7 +40,7 @@ class Game
     void tryButtonPress(const glm::vec2& worldCoords);
     void resetHandGraphics();
     void resetGraphics();
-    void winLoss(bool isNatural21);
+    void winLoss();
     bool initialWinLoss(bool isNatural21);
     void dealerHit(bool isNatural21);
     bool isExited() const;

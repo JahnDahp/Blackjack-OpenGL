@@ -177,7 +177,6 @@ void Game::playGame()
     return;
   }
   if (players[currentHand]->total() == 21 || players[currentHand]->isBust()) currentHand++;
-  
 }
 void Game::endHand()
 {
@@ -186,7 +185,7 @@ void Game::endHand()
   if (!initialWinLoss(isNatural21))
   {
     dealerHit(isNatural21);
-    winLoss(isNatural21);
+    winLoss();
   }
   if (initialBet > bankroll) initialBet = (int)bankroll - ((int)bankroll % 5);
 }
@@ -317,7 +316,7 @@ void Game::resetGraphics()
   initialBetLabel->setVisible(true);
   if ((float)shoe.size() / (float)(DECK_SIZE * rules.decks) < 1.0f - rules.pen) shuffleLabel->setVisible(true);
 }
-void Game::winLoss(bool isNatural21)
+void Game::winLoss()
 {
   float gain = 0.0f;
   for (int i = 0; i < players.size(); i++)
