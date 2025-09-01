@@ -1,24 +1,34 @@
-A fully playable Blackjack game built with modern C++20 and OpenGL. This project uses:
+This is a Blackjack game meant to simulate most real Blackjack games found in casinos across the United States.
 
-All dependencies are automatically installed via vcpkg (https://github.com/microsoft/vcpkg):
+Features
+--------
+  - Blackjack payout
+  - Dealer hitting/staying on soft 17
+  - Number of decks
+  - Doubling after a split
+  - Number of hands to split to
+  - Draw on split aces
+  - Resplit aces
+  - Late surrender
+  - Deck penetration
+  - Totals where doubling is allowed
+  - Variable bets and bankroll sizes
+  - Insurance
 
-- glfw3
-- glew
-- glm
-- freetype
+Code Details
+--------
+Libraries used
+  - [glew](https://github.com/nigels-com/glew) for loading OpenGL.
+  - [glfw](https://github.com/StudioClockWork/GLFW) for creating the window.
+  - [glm](https://github.com/g-truc/glm) for matrix operations.
+  - [stb_image](https://github.com/nothings/stb) for image rendering.
+  - [freetype](https://github.com/cpuimage/freetype) for text rendering.
+  - [vcpkg](https://github.com/microsoft/vcpkg.git) for managing dependencies.
 
-Make sure the following tools are installed and available in your PATH:
+Build Instructions
+--------
+Requirements:
+  - [CMake](https://cmake.org/)
+  - C++20 compiler/build tools ([MSVC](https://visualstudio.microsoft.com/vs/features/cplusplus/), [GCC](https://gcc.gnu.org/install/), [Ninja](https://github.com/ninja-build/ninja), or [Clang](https://github.com/llvm/llvm-project/releases). On Windows, this comes with Visual Studio or Build Tools for Visual Studio.
 
-- Git
-- CMake (https://cmake.org/download/)
-- Ninja (https://ninja-build.org/)
-- Compiler C++20 compatible (MSVC, Clang, GCC, etc.)
-
-How to build:
-
-- git clone --recurse-submodules https://github.com/JahnDahp/Blackjack.git
-- cd Blackjack
-- cmake --preset=Default
-- cmake --build --preset=Default
-- cd Bin
-- Blackjack.exe
+Run the bootstrap to generate in the executable in Bin. Run bootstrap.bat for windows, bootstrap.sh for MacOS/Linux.

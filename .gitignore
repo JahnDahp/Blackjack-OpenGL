@@ -1,4 +1,6 @@
 # Build
+/bin/
+/Bin/
 /build/
 /Build/
 /out/

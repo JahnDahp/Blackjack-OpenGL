@@ -9,7 +9,6 @@
     {
       "name": "Default",
       "hidden": false,
-      "generator": "Ninja",
       "binaryDir": "${sourceDir}/Build",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
