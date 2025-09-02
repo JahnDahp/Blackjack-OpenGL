@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GLM/gtc/type_ptr.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "renderer.h"
 
 class Button

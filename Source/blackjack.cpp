@@ -102,7 +102,7 @@ GLFWwindow* Blackjack::initGraphics()
 	glfwSetMouseButtonCallback(window, mouseButtonCallback);
 	glfwSwapInterval(1);
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
-	glewInit();
+	gl3wInit();
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_BLEND);

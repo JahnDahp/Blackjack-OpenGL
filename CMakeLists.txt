@@ -2,14 +2,16 @@
 project(Blackjack)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Bin/")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG  "${CMAKE_SOURCE_DIR}/Bin/")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/Bin/")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Bin")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
-find_package(GLEW REQUIRED)
-find_package(glfw3 CONFIG REQUIRED)
-find_package(glm CONFIG REQUIRED)
-find_package(freetype CONFIG REQUIRED)
+add_subdirectory("Dependencies/glfw")
+add_subdirectory("Dependencies/glm")
+add_subdirectory("Dependencies/gl3w")
+add_subdirectory("Dependencies/freetype")
 
 add_executable(Blackjack 
 	"main.cpp" 
@@ -37,4 +39,4 @@ target_include_directories(Blackjack PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Source
 target_include_directories(Blackjack PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Include")
 target_include_directories(Blackjack PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Resources")
 
-target_link_libraries(Blackjack PRIVATE GLEW::GLEW glfw glm::glm freetype)
+target_link_libraries(Blackjack PRIVATE gl3w glfw glm::glm freetype)
