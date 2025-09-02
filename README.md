@@ -23,7 +23,6 @@ Libraries used
   - [glm](https://github.com/g-truc/glm) for matrix operations.
   - [stb_image](https://github.com/nothings/stb) for image rendering.
   - [freetype](https://github.com/cpuimage/freetype) for text rendering.
-  - [vcpkg](https://github.com/microsoft/vcpkg.git) for managing dependencies.
 
 Build Instructions
 --------
@@ -31,4 +30,4 @@ Requirements:
   - [CMake](https://cmake.org/)
   - C++20 compiler/build tools ([MSVC](https://visualstudio.microsoft.com/vs/features/cplusplus/), [GCC](https://gcc.gnu.org/install/), [Ninja](https://github.com/ninja-build/ninja), or [Clang](https://github.com/llvm/llvm-project/releases). On Windows, this comes with Visual Studio or Build Tools for Visual Studio.
 
-Run the bootstrap to generate in the executable in Bin. Run bootstrap.bat for windows, bootstrap.sh for MacOS/Linux.
+Run `git clone --recursive https://github.com/JahnDahp/Blackjack-OpenGL/`. Then cd Blackjack-OpenGL && mkdir Build && cd Build && cmake .. -DCMAKE_BUILD_TYPE=Release && cmake --build . --config Release.
